@@ -1,7 +1,6 @@
-// content.js - v8.0 (Robust Extraction)
+// content.js - v8.1 (Clean Data Pass-through)
 
 (function() {
-
   const CONFIG = {
     BUTTON_ID: "notebooklm-to-anki-btn", 
     ANCHOR_SELECTORS: [
@@ -26,13 +25,11 @@
     }
   }
 
-  // --- TEXT PROCESSING ENGINE ---
   function unescapeHtml(str) {
     if (!str) return "";
     return str.replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'");
   }
 
-  // --- EXTRACTION LOGIC ---
   function processBatch(jsonString, customNotebookTitle) {
     try {
       const cleanJson = unescapeHtml(jsonString);
@@ -55,7 +52,7 @@
           question: q.question,
           hint: q.hint || "",
           
-          // Capture Raw Data (Background.js will handle mapping)
+          // Capture raw values
           option1: q.answerOptions[0]?.text || "",
           flag1: q.answerOptions[0]?.isCorrect ? "True" : "False",
           rationale1: q.answerOptions[0]?.rationale || "", 
@@ -92,7 +89,7 @@
     }
   }
 
-  // --- UI INJECTOR ---
+  // UI INJECTOR (Standard)
   let isMinerConnected = false;
   function initUiInjector() {
     window.addEventListener("message", (event) => {
