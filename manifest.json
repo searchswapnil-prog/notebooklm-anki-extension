@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "NotebookLM to Anki",
+  "version": "2.0",
+  "description": "Exports NotebookLM Quizzes to Anki v5.0 Template",
+  "permissions": [
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://notebooklm.google.com/*",
+    "https://*.usercontent.goog/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://notebooklm.google.com/*",
+        "https://*.usercontent.goog/*"
+      ],
+      "js": ["content.js"],
+      "all_frames": true,
+      "match_origin_as_fallback": true,
+      "run_at": "document_idle"
+    }
+  ]
+}
