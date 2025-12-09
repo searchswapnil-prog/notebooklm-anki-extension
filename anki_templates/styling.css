@@ -1,0 +1,152 @@
+/* ___ NOTEBOOKLM V7.8 (Reverted to v7.5 Stable + 580px) ___ */
+
+/* 1. GLOBAL RESET & FLICKER FIX */
+html {
+    overflow-y: scroll; 
+    overflow-x: hidden;
+}
+
+body {
+    margin: 0; padding: 0; width: 100%; 
+    background-color: #1e1e1e;
+    font-family: 'Roboto', 'Segoe UI', sans-serif;
+    color: #e3e3e3;
+}
+
+.card {
+    font-size: 16px; line-height: 1.6; text-align: left;
+    background-color: #1e1e1e; 
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+}
+
+/* 2. LAYOUT CONTAINERS */
+.main-wrapper {
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
+    display: flex;
+}
+
+/* --- CENTERED MODE (Front Side Default) --- */
+.mode-centered { justify-content: center; }
+.mode-centered .quiz-column {
+    width: 100%;
+    max-width: 580px; 
+    margin: 0 auto;
+    padding: 60px 20px;
+}
+
+/* --- SPLIT MODE (Back Side Reveal) --- */
+.mode-split { justify-content: flex-start; }
+.mode-split .quiz-column {
+    width: 50%; /* Left Half */
+    padding: 60px 40px;
+    align-items: center; 
+}
+.mode-split .quiz-content-wrapper {
+    width: 100%;
+    max-width: 580px; 
+}
+
+/* --- COLUMNS --- */
+.quiz-column {
+    display: flex; flex-direction: column;
+    box-sizing: border-box;
+    min-height: 100vh;
+    z-index: 1;
+}
+
+/* Fixed Right Column (The Diagram) */
+.diagram-column {
+    position: fixed;
+    top: 0; right: 0;
+    width: 50%; height: 100vh;
+    background-color: #121212;
+    border-left: 1px solid #333;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px; box-sizing: border-box;
+    z-index: 10;
+}
+.diagram-column img {
+    max-width: 100%; max-height: 90vh;
+    object-fit: contain; border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: block;
+}
+
+/* --- QUIZ ELEMENTS --- */
+.question-text {
+    font-size: 1.35rem; font-weight: 500; margin-bottom: 30px;
+    color: #ffffff; line-height: 1.5;
+}
+
+.hint-container { margin-bottom: 30px; }
+
+/* HINT BUTTON */
+.hint-btn {
+    background-color: #2d2d2d; border: 1px solid #444746; border-radius: 20px;
+    padding: 8px 16px; color: #a8c7fa; font-size: 0.9rem; font-weight: 500;
+    display: inline-flex; align-items: center; gap: 8px; 
+    cursor: pointer; user-select: none; width: fit-content;
+    transition: background-color 0.2s;
+}
+.hint-btn:hover { background-color: #383838; }
+
+.hint-text-box {
+    margin-top: 15px; background-color: #252525; border-left: 4px solid #a8c7fa;
+    padding: 15px; color: #e3e3e3; display: none; border-radius: 0 8px 8px 0;
+}
+
+.options-list { display: flex; flex-direction: column; gap: 15px; padding-bottom: 100px; }
+
+.option-block {
+    background-color: #2d2d2d; border: 1px solid #444746; border-radius: 12px;
+    padding: 18px; display: flex; flex-direction: column; gap: 10px;
+    cursor: pointer; position: relative; transition: background-color 0.1s ease;
+}
+.option-block:hover { background-color: #383838; }
+
+.option-content { display: flex; align-items: flex-start; font-size: 1.05rem; }
+.option-letter { font-weight: bold; margin-right: 15px; color: #a8c7fa; min-width: 25px; }
+
+/* --- FEEDBACK --- */
+.state-correct { border: 2px solid #6dd58c !important; background-color: #252525 !important; }
+.state-wrong { border: 2px solid #e87c7c !important; background-color: #252525 !important; }
+.state-dimmed { opacity: 0.4; pointer-events: none; }
+
+.feedback-section { margin-top: 12px; display: none; padding-top: 15px; border-top: 1px solid #444; }
+
+.thats-right { color: #6dd58c; font-weight: bold; display: flex; align-items: center; gap: 10px; font-size: 1.1rem; margin-bottom: 8px; }
+.not-quite { color: #e87c7c; font-weight: bold; display: flex; align-items: center; gap: 10px; font-size: 1.1rem; margin-bottom: 8px; }
+
+.rationale-text { color: #cccccc; margin-left: 4px; line-height: 1.6; }
+
+/* SVG STATUS ICONS */
+.status-icon {
+    width: 24px; height: 24px; min-width: 24px;
+    fill: currentColor; display: block;
+}
+
+/* --- NEW: LATEX CODE SNIPPET STYLING --- */
+.latex-snippet {
+    background-color: #383838;
+    color: #e6b455; /* Soft Orange/Gold for code contrast */
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.95em;
+    border: 1px solid #444;
+}
+
+/* MOBILE */
+@media (max-width: 1000px) {
+    .main-wrapper { flex-direction: column-reverse; }
+    .mode-split .quiz-column, .mode-centered .quiz-column { width: 100%; padding: 20px; }
+    .diagram-column { 
+        position: relative; width: 100%; height: auto;
+        border-left: none; border-bottom: 1px solid #333;
+        display: flex !important;
+    }
+    .diagram-column img { max-height: 40vh; }
+}

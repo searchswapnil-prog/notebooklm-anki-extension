@@ -1,0 +1,86 @@
+<div id="layout-root" class="main-wrapper">
+    <div class="quiz-column">
+        <div class="quiz-content-wrapper">
+            <div class="question-text">{{Question}}</div>
+            <div class="options-list" id="back-options"></div>
+        </div>
+    </div>
+
+    <div class="diagram-column" id="diagram-container">
+        {{ArchDiagram}}
+    </div>
+</div>
+
+<div id="back-data" style="display:none;">
+    <div data-opt="A" data-text="{{Option1}}" data-flag="{{Flag1}}" data-reason="{{Rationale1}}"></div>
+    <div data-opt="B" data-text="{{Option2}}" data-flag="{{Flag2}}" data-reason="{{Rationale2}}"></div>
+    <div data-opt="C" data-text="{{Option3}}" data-flag="{{Flag3}}" data-reason="{{Rationale3}}"></div>
+    <div data-opt="D" data-text="{{Option4}}" data-flag="{{Flag4}}" data-reason="{{Rationale4}}"></div>
+    <div id="diagram-check">{{ArchDiagram}}</div>
+</div>
+
+<script>
+(function() {
+    // LAYOUT SWITCHER
+    const diagramContent = document.getElementById('diagram-check').innerHTML.trim();
+    const root = document.getElementById('layout-root');
+    const diagramCol = document.getElementById('diagram-container');
+
+    if (diagramContent.length > 0) {
+        root.classList.add('mode-split');
+        diagramCol.style.display = 'flex'; 
+    } else {
+        root.classList.add('mode-centered');
+        diagramCol.style.display = 'none'; 
+    }
+
+    // BACK LOGIC
+    const container = document.getElementById('back-options');
+    const dataItems = document.querySelectorAll('#back-data > div[data-opt]');
+    const iconCheck = `<svg class="status-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`;
+
+    // --- HELPER: Render Backticks as HTML Code Blocks ---
+    function formatText(str) {
+        if (!str) return "";
+        return str.replace(/`([^`]+)`/g, '<code class="latex-snippet">$1</code>');
+    }
+
+    dataItems.forEach(item => {
+        const letter = item.dataset.opt;
+        // APPLY FORMATTING HERE
+        const text = formatText(item.dataset.text);
+        const isCorrect = item.dataset.flag.trim() === "True";
+        // Apply formatting to rationale too
+        const reason = formatText(item.dataset.reason);
+        
+        const block = document.createElement('div');
+        block.className = 'option-block';
+        
+        if (isCorrect) {
+            block.classList.add('state-correct');
+            block.innerHTML = `
+                <div class="option-content">
+                    <span class="option-letter">${letter}.</span>
+                    <span>${text}</span>
+                </div>
+                <div class="feedback-section" style="display:block;">
+                    <div class="thats-right">
+                        ${iconCheck} That's right!
+                    </div>
+                    <div class="rationale-text">${reason}</div>
+                </div>
+            `;
+        } else {
+            block.classList.add('state-dimmed');
+            block.innerHTML = `
+                <div class="option-content">
+                    <span class="option-letter">${letter}.</span>
+                    <span>${text}</span>
+                </div>
+            `;
+        }
+        
+        container.appendChild(block);
+    });
+})();
+</script>

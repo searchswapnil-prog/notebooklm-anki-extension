@@ -1,0 +1,98 @@
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<div class="main-wrapper mode-centered">
+    <div class="quiz-column">
+        <div class="quiz-content-wrapper">
+            <div class="question-text">{{Question}}</div>
+
+            <div class="hint-container">
+                <div class="hint-btn" id="hint-toggle">
+                    <span class="material-icons" style="font-size: 18px;">lightbulb</span>
+                    Hint
+                </div>
+                <div class="hint-text-box" id="hint-content">{{Hint}}</div>
+            </div>
+
+            <div class="options-list" id="front-options"></div>
+        </div>
+    </div>
+</div>
+
+<div id="raw-data" style="display:none;">
+    <div data-opt="A" data-text="{{Option1}}" data-flag="{{Flag1}}" data-reason="{{Rationale1}}"></div>
+    <div data-opt="B" data-text="{{Option2}}" data-flag="{{Flag2}}" data-reason="{{Rationale2}}"></div>
+    <div data-opt="C" data-text="{{Option3}}" data-flag="{{Flag3}}" data-reason="{{Rationale3}}"></div>
+    <div data-opt="D" data-text="{{Option4}}" data-flag="{{Flag4}}" data-reason="{{Rationale4}}"></div>
+</div>
+
+<script>
+(function() {
+    const container = document.getElementById('front-options');
+    const dataItems = document.querySelectorAll('#raw-data > div');
+    
+    // Status Icons
+    const iconCheck = `<svg class="status-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`;
+    const iconClose = `<svg class="status-icon" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>`;
+
+    // --- HELPER: Render Backticks as HTML Code Blocks ---
+    function formatText(str) {
+        if (!str) return "";
+        // Finds text wrapped in backticks `...` and wraps it in <code class="latex-snippet">
+        return str.replace(/`([^`]+)`/g, '<code class="latex-snippet">$1</code>');
+    }
+
+    dataItems.forEach(item => {
+        const letter = item.dataset.opt;
+        // APPLY FORMATTING HERE
+        const text = formatText(item.dataset.text);
+        const isCorrect = item.dataset.flag.trim() === "True";
+        // Apply formatting to rationale too, just in case
+        const reason = formatText(item.dataset.reason);
+        
+        const btn = document.createElement('div');
+        btn.className = 'option-block';
+        
+        btn.innerHTML = `
+            <div class="option-content">
+                <span class="option-letter">${letter}.</span>
+                <span>${text}</span>
+            </div>
+            <div class="feedback-section">
+                <div class="${isCorrect ? 'thats-right' : 'not-quite'}">
+                    ${isCorrect ? iconCheck : iconClose}
+                    <span>${isCorrect ? "That's right!" : "Not quite"}</span>
+                </div>
+                <div class="rationale-text">${reason}</div>
+            </div>
+        `;
+        
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.option-block').forEach(b => {
+                b.classList.remove('state-correct', 'state-wrong');
+                b.querySelector('.feedback-section').style.display = 'none';
+            });
+
+            if (isCorrect) btn.classList.add('state-correct');
+            else btn.classList.add('state-wrong');
+            
+            if(reason && reason.trim() !== "") {
+                btn.querySelector('.feedback-section').style.display = 'block';
+            }
+        });
+
+        container.appendChild(btn);
+    });
+
+    const hintBtn = document.getElementById('hint-toggle');
+    const hintBox = document.getElementById('hint-content');
+    if (!hintBox.innerHTML.trim()) hintBtn.style.display = 'none';
+    else {
+        hintBtn.addEventListener('click', () => {
+            const isVisible = hintBox.style.display === "block";
+            hintBox.style.display = isVisible ? "none" : "block";
+            hintBtn.style.backgroundColor = isVisible ? "#2d2d2d" : "#3c3c3c";
+            hintBtn.style.color = isVisible ? "#a8c7fa" : "#ffffff";
+        });
+    }
+})();
+</script>
