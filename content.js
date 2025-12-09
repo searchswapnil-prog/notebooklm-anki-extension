@@ -1,4 +1,4 @@
-// content.js - v7.0 (Multi-Rationale Extraction)
+// content.js - v8.0 (Robust Extraction)
 
 (function() {
 
@@ -26,11 +26,13 @@
     }
   }
 
+  // --- TEXT PROCESSING ENGINE ---
   function unescapeHtml(str) {
     if (!str) return "";
     return str.replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'");
   }
 
+  // --- EXTRACTION LOGIC ---
   function processBatch(jsonString, customNotebookTitle) {
     try {
       const cleanJson = unescapeHtml(jsonString);
@@ -53,7 +55,7 @@
           question: q.question,
           hint: q.hint || "",
           
-          // Capture specific text, flag, AND rationale for each
+          // Capture Raw Data (Background.js will handle mapping)
           option1: q.answerOptions[0]?.text || "",
           flag1: q.answerOptions[0]?.isCorrect ? "True" : "False",
           rationale1: q.answerOptions[0]?.rationale || "", 
@@ -90,7 +92,7 @@
     }
   }
 
-  // UI INJECTOR (Standard)
+  // --- UI INJECTOR ---
   let isMinerConnected = false;
   function initUiInjector() {
     window.addEventListener("message", (event) => {
