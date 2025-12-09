@@ -1,7 +1,7 @@
 <div id="layout-root" class="main-wrapper">
     <div class="quiz-column">
         <div class="quiz-content-wrapper">
-            <div class="question-text">{{Question}}</div>
+            <div class="question-text" id="back-q-text"></div>
             <div class="options-list" id="back-options"></div>
         </div>
     </div>
@@ -12,6 +12,7 @@
 </div>
 
 <div id="back-data" style="display:none;">
+    <div id="d-question">{{Question}}</div>
     <div data-opt="A" data-text="{{Option1}}" data-flag="{{Flag1}}" data-reason="{{Rationale1}}"></div>
     <div data-opt="B" data-text="{{Option2}}" data-flag="{{Flag2}}" data-reason="{{Rationale2}}"></div>
     <div data-opt="C" data-text="{{Option3}}" data-flag="{{Flag3}}" data-reason="{{Rationale3}}"></div>
@@ -21,66 +22,92 @@
 
 <script>
 (function() {
-    // LAYOUT SWITCHER
-    const diagramContent = document.getElementById('diagram-check').innerHTML.trim();
-    const root = document.getElementById('layout-root');
-    const diagramCol = document.getElementById('diagram-container');
-
-    if (diagramContent.length > 0) {
-        root.classList.add('mode-split');
-        diagramCol.style.display = 'flex'; 
-    } else {
-        root.classList.add('mode-centered');
-        diagramCol.style.display = 'none'; 
-    }
-
-    // BACK LOGIC
-    const container = document.getElementById('back-options');
-    const dataItems = document.querySelectorAll('#back-data > div[data-opt]');
-    const iconCheck = `<svg class="status-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`;
-
-    // --- HELPER: Render Backticks as HTML Code Blocks ---
-    function formatText(str) {
+    function cleanMath(str) {
         if (!str) return "";
-        return str.replace(/`([^`]+)`/g, '<code class="latex-snippet">$1</code>');
+        let s = str.replace(/\$\$(.*?)\$\$/gs, '\\[$1\\]');
+        s = s.replace(/\$((?:[^$]|\\$)+?)\$/g, '\\($1\\)');
+        s = s.replace(/`([^`]+)`/g, '<code class="latex-snippet">$1</code>');
+        return s;
     }
 
-    dataItems.forEach(item => {
-        const letter = item.dataset.opt;
-        // APPLY FORMATTING HERE
-        const text = formatText(item.dataset.text);
-        const isCorrect = item.dataset.flag.trim() === "True";
-        // Apply formatting to rationale too
-        const reason = formatText(item.dataset.reason);
-        
-        const block = document.createElement('div');
-        block.className = 'option-block';
-        
-        if (isCorrect) {
-            block.classList.add('state-correct');
-            block.innerHTML = `
-                <div class="option-content">
-                    <span class="option-letter">${letter}.</span>
-                    <span>${text}</span>
-                </div>
-                <div class="feedback-section" style="display:block;">
-                    <div class="thats-right">
-                        ${iconCheck} That's right!
-                    </div>
-                    <div class="rationale-text">${reason}</div>
-                </div>
-            `;
+    function triggerMath(element) {
+        if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+            MathJax.typesetPromise([element]).catch(err => {});
+        } else if (typeof MathJax !== 'undefined' && MathJax.Hub) {
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub, element]);
+        }
+    }
+
+    try {
+        // Layout Logic
+        const diagramCheck = document.getElementById('diagram-check');
+        const diagramContent = diagramCheck ? diagramCheck.innerHTML.trim() : "";
+        const root = document.getElementById('layout-root');
+        const diagramCol = document.getElementById('diagram-container');
+
+        if (diagramContent.length > 0) {
+            root.classList.add('mode-split');
+            diagramCol.style.display = 'flex'; 
         } else {
-            block.classList.add('state-dimmed');
-            block.innerHTML = `
-                <div class="option-content">
-                    <span class="option-letter">${letter}.</span>
-                    <span>${text}</span>
-                </div>
-            `;
+            root.classList.add('mode-centered');
+            diagramCol.style.display = 'none'; 
         }
         
-        container.appendChild(block);
-    });
+        // Translate Question
+        const qRaw = document.getElementById('d-question').innerHTML;
+        document.getElementById('back-q-text').innerHTML = cleanMath(qRaw);
+
+        // Options Logic
+        const container = document.getElementById('back-options');
+        const dataItems = document.querySelectorAll('#back-data > div[data-opt]');
+        const iconCheck = `<svg class="status-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`;
+
+        dataItems.forEach(item => {
+            const letter = item.dataset.opt;
+            const rawText = item.dataset.text || "";
+            const rawReason = item.dataset.reason || "";
+            
+            if (!rawText.trim() && !rawReason.trim()) return;
+
+            const text = cleanMath(rawText);
+            const reason = cleanMath(rawReason);
+            
+            const flagStr = (item.dataset.flag || "").trim().toLowerCase();
+            const isCorrect = (flagStr === "true" || flagStr === "yes" || flagStr === "1");
+
+            const block = document.createElement('div');
+            block.className = 'option-block';
+            
+            if (isCorrect) {
+                block.classList.add('state-correct');
+                block.innerHTML = `
+                    <div class="option-content">
+                        <span class="option-letter">${letter}.</span>
+                        <span>${text}</span>
+                    </div>
+                    <div class="feedback-section" style="display:block;">
+                        <div class="thats-right">
+                            ${iconCheck} That's right!
+                        </div>
+                        <div class="rationale-text">${reason}</div>
+                    </div>
+                `;
+            } else {
+                block.classList.add('state-dimmed');
+                block.innerHTML = `
+                    <div class="option-content">
+                        <span class="option-letter">${letter}.</span>
+                        <span>${text}</span>
+                    </div>
+                `;
+            }
+            container.appendChild(block);
+        });
+
+        setTimeout(() => triggerMath(document.body), 100);
+
+    } catch (e) {
+        console.log("Back Template Error:", e);
+    }
 })();
 </script>
