@@ -1,15 +1,17 @@
-// background.js - v8.1 (Fixed Field Mapping)
+// background.js - v9.1 (Generic Public Release)
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "sendBatchToAnki") {
     
-    // 1. CONFIGURATION
-    const PARENT_DECK = "AWS SAA NotebookLM";
-    const SUB_DECK_NAME = request.deckTitle || "Unknown Notebook";
+    // 1. GENERIC DECK CONFIGURATION
+    const PARENT_DECK = "NotebookLM"; 
+    const SUB_DECK_NAME = request.deckTitle || "Default Notebook";
+    
+    // Final Deck: "NotebookLM::Calculus 101"
     const TARGET_DECK = `${PARENT_DECK}::${SUB_DECK_NAME}`; 
-    const NOTE_TYPE = "NotebookLM Markdown"; // Targets your new Note Type
+    const NOTE_TYPE = "NotebookLM Markdown"; 
 
-    // 2. FIELD MAPPING (Based on image_86ad51.png)
+    // 2. FIELD MAPPING (Your verified 15-field map)
     const notes = request.batchData.map(card => {
       return {
         "deckName": TARGET_DECK,
@@ -18,29 +20,29 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           // --- HEADER FIELDS ---
           "Question":     card.question,
           "Hint":         card.hint,
-          "ArchDiagram":  "", // Field 3: Empty for manual diagrams
+          "ArchDiagram":  "", 
           
-          // --- OPTION 1 (The "Rationale-First" Group) ---
-          "Option1":      card.option1,     // Field 4
-          "Rationale1":   card.rationale1,  // Field 5
-          "Flag1":        card.flag1,       // Field 6
+          // --- OPTION 1 (Rationale First) ---
+          "Option1":      card.option1, 
+          "Rationale1":   card.rationale1,
+          "Flag1":        card.flag1,
           
-          // --- OPTION 2 (The "Flag-First" Group) ---
-          "Option2":      card.option2,     // Field 7
-          "Flag2":        card.flag2,       // Field 8
-          "Rationale2":   card.rationale2,  // Field 9
+          // --- OPTION 2 (Flag First) ---
+          "Option2":      card.option2, 
+          "Flag2":        card.flag2,
+          "Rationale2":   card.rationale2,
           
-          // --- OPTION 3 ---
-          "Option3":      card.option3,     // Field 10
-          "Flag3":        card.flag3,       // Field 11
-          "Rationale3":   card.rationale3,  // Field 12
+          // --- OPTION 3 (Flag First) ---
+          "Option3":      card.option3, 
+          "Flag3":        card.flag3,
+          "Rationale3":   card.rationale3,
           
-          // --- OPTION 4 ---
-          "Option4":      card.option4,     // Field 13
-          "Flag4":        card.flag4,       // Field 14
-          "Rationale4":   card.rationale4   // Field 15
+          // --- OPTION 4 (Flag First) ---
+          "Option4":      card.option4, 
+          "Flag4":        card.flag4,
+          "Rationale4":   card.rationale4
         },
-        "tags": ["notebooklm", "markdown"]
+        "tags": ["notebooklm_export"]
       };
     });
 
