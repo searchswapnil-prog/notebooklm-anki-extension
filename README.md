@@ -39,29 +39,12 @@ This extension needs to talk to your Anki desktop app.
 3.  Enter code: `2055492159`.
 4.  Restart Anki.
 
-### Step 2: Create the Note Type
-You must create a specific Note Type in Anki for this extension to work.
-1.  Open Anki -> **Tools** -> **Manage Note Types**.
-2.  Click **Add** -> **Add: Basic** -> Name it **"NotebookLM Markdown"**.
-3.  Click **Fields** and create exactly these 15 fields in this order:
-
-    1.  `Question`
-    2.  `Hint`
-    3.  `ArchDiagram`
-    4.  `Option1`
-    5.  `Rationale1`
-    6.  `Flag1`
-    7.  `Option2`
-    8.  `Flag2`
-    9.  `Rationale2`
-    10. `Option3`
-    11. `Flag3`
-    12. `Rationale3`
-    13. `Option4`
-    14. `Flag4`
-    15. `Rationale4`
-
-*(Note the slight difference in order for Option 1 vs others. This is intentional.)*
+### Step 2: Install the Note Type (One-Click)
+Instead of creating fields manually, simply install this helper add-on. It automatically builds the perfect "NotebookLM Markdown" note type for you.
+1.  In Anki, go to **Tools** -> **Add-ons** -> **Get Add-ons**.
+2.  Enter code: `1282137893`.
+3.  **Restart Anki.**
+    * *On restart, you will see a success message confirming the Note Type has been installed.*
 
 ### Step 3: Load the Extension
 1.  Clone or download this repository.
@@ -77,5 +60,7 @@ You must create a specific Note Type in Anki for this extension to work.
 * **Fix:** Refresh the NotebookLM webpage. Sometimes the app cleans up the data source to save memory. Refreshing brings it back.
 
 **Math looks like code (e.g., `$\pi$`) instead of symbols ($\pi$)**
-* **Fix:** This is a template issue. Ensure you are using the provided Card Templates in the `anki_templates` folder, which include the specific script to render MathJax immediately.
+* **Fix:** This usually resolves itself after a restart. Ensure you have installed the Note Type using the code in Step 2, as it contains the specific templates required to render math instantly.
 
+**Shift key not working?**
+* Check your Windows Sticky Keys settings or your mechanical keyboard's "Game Mode".
